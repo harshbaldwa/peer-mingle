@@ -23,7 +23,9 @@ RUN mkdir -p /home/app
 RUN addgroup --system app && adduser --system --group app
 
 ENV HOME=/home/app
-ENV APP_HOME=/home/app/web
+ENV MEDIA=$HOME/media
+ENV PASSWORD_DIR=$HOME/passwords
+ENV APP_HOME=$HOME/web
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
@@ -35,5 +37,7 @@ RUN pip install --no-cache /wheels/*
 COPY . $APP_HOME
 
 RUN chown -R app:app $APP_HOME
+RUN chown -R app:app $MEDIA
+RUN chown -R app:app $PASSWORD_DIR
 
 USER app
