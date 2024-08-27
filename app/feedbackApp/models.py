@@ -202,12 +202,30 @@ class Submission(models.Model):
     )
     file = models.FileField(upload_to="", blank=True)
     date = models.DateTimeField(blank=True, null=True)
+    is_late = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         path = f"courses/{self.assignment.course.slug}/" \
             f"assignments/{self.assignment.slug}/"
         self.file.name = path + self.student.username + ".zip"
         super().save(*args, **kwargs)
+
+    def assign_submissions(self):
+        if self.student.feedback.filter(assignment=self.assignment).exists():
+            return
+
+        assignments_review = Submission.objects.filter(
+            assignment=self.assignment, is_late=False
+        ).exclude(student=self.student)
+        reviewees = assignments_review.order_by(
+            "?")[:self.assignment.num_reviewers]
+
+        for reviewee in reviewees:
+            Feedback.objects.create(
+                assignment=self.assignment,
+                submission=reviewee,
+                reviewer=self.student
+            )
 
     def __str__(self):
         return f"{self.student.username} - {self.assignment}"

@@ -53,8 +53,16 @@ class AssignmentAdmin(admin.ModelAdmin):
 
 
 class SubmissionAdmin(admin.ModelAdmin):
-    list_display = ["assignment", "student"]
+    list_display = ["assignment", "student", "is_late"]
     ordering = ["assignment", "student"]
+    actions = ["assign_submissions"]
+    list_filter = ["is_late", "assignment"]
+
+    @admin.action(description="Assign submissions for review")
+    def assign_submissions(self, request, queryset):
+        for submission in queryset:
+            submission.assign_submissions()
+        self.message_user(request, "Submission(s) assigned successfully")
 
 
 class FeedbackAdmin(admin.ModelAdmin):
