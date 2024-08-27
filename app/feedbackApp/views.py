@@ -46,7 +46,6 @@ def course_view(request, slug):
             "message": "You don't have access to this course."
         })
     assignments = course.assignments.all()
-    pending_feedbacks = 0
     # check if the user submitted this assignment
     for assignment in assignments:
         try:
@@ -54,16 +53,16 @@ def course_view(request, slug):
                 assignment=assignment, student=request.user)
             assignment.submitted = True
             # check how many feedbacks the user has to issue
-            pending_feedbacks = Feedback.objects.filter(
+            pending_feedbacks_count = Feedback.objects.filter(
                 assignment=assignment,
                 reviewer=request.user,
                 issued=False).count()
+            assignment.pending_feedbacks = pending_feedbacks_count
         except Submission.DoesNotExist:
             assignment.submitted = False
     return render(request, "course_detail.html", {
         "course": course,
-        "assignments": assignments,
-        "pending_feedbacks": pending_feedbacks
+        "assignments": assignments
     })
 
 

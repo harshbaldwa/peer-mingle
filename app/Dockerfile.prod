@@ -22,11 +22,7 @@ RUN mkdir -p /home/app
 RUN mkdir -p /home/app/media
 RUN mkdir -p /home/app/passwords
 
-RUN addgroup --system app && adduser --system --group app
-
 ENV HOME=/home/app
-ENV MEDIA=$HOME/media
-ENV PASSWORD_DIR=$HOME/passwords
 ENV APP_HOME=$HOME/web
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
@@ -37,9 +33,3 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*
 
 COPY . $APP_HOME
-
-RUN chown -R app:app $APP_HOME
-RUN chown -R app:app $MEDIA
-RUN chown -R app:app $PASSWORD_DIR
-
-USER app

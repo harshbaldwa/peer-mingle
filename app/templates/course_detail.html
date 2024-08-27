@@ -20,8 +20,8 @@
                     {% if assignment.submitted %}
                         Yes
                 </p>
-                {% if pending_feedbacks %}
-                <p>Reviews Pending: {{ pending_feedbacks }}</p>
+                {% if assignment.pending_feedbacks %}
+                <p>Reviews Pending: {{ assignment.pending_feedbacks }}</p>
                 {% else %}
                 <p>Reviews Completed</p>
                 {% endif %}
