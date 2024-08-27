@@ -1,7 +1,7 @@
 services:
   django:
     build: ./app
-    command: bash -c 'while !</dev/tcp/postgres-db/5432; do sleep 1; done; python manage.py makemigrations --noinput; python manage.py migrate --noinput; python manage.py collectstatic --noinput; python manage.py runserver 0.0.0.0:8000'
+    command: bash -c 'while !</dev/tcp/postgres-db/5432; do sleep 1; done; python manage.py makemigrations --noinput; python manage.py makemigrations feedbackApp --noinput; python manage.py migrate --noinput; python manage.py collectstatic --noinput; python manage.py runserver 0.0.0.0:8000'
     volumes:
       - ./app:/app
       - django_media:/media

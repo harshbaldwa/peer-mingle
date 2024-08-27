@@ -3,7 +3,7 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile.prod
-    command: bash -c 'while !</dev/tcp/postgres-db/5432; do sleep 1; done; python manage.py makemigrations --noinput; python manage.py migrate --noinput; python manage.py collectstatic --noinput; gunicorn --bind 0.0.0.0:8000 feedback.wsgi'
+    command: bash -c 'while !</dev/tcp/postgres-db/5432; do sleep 1; done; python manage.py makemigrations --noinput; python manage.py makemigrations feedbackApp --noinput; python manage.py migrate --noinput; python manage.py collectstatic --noinput; gunicorn --bind 0.0.0.0:8000 feedback.wsgi'
     volumes:
       - django_media_prod:/media
       - django_password_prod:/passwords
