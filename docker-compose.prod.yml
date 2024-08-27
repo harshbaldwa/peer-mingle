@@ -1,24 +1,27 @@
 services:
-  web:
+  django:
     build:
       context: ./app
       dockerfile: Dockerfile.prod
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; python manage.py makemigrations --noinput; python manage.py migrate --noinput; python manage.py collectstatic --noinput; gunicorn --bind 0.0.0.0:8000 feedback.wsgi'
+    command: bash -c 'while !</dev/tcp/postgres-db/5432; do sleep 1; done; python manage.py makemigrations --noinput; python manage.py migrate --noinput; python manage.py collectstatic --noinput; gunicorn --bind 0.0.0.0:8000 feedback.wsgi'
+    volumes:
+      - django_media_prod:/media
+      - django_password_prod:/passwords
     expose:
       - 8000
     environment:
       - DEBUG=0
       - SECRET_KEY=${DJANGO_SECRET_KEY}
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASS}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASS}@postgres-db:${POSTGRES_PORT}/${POSTGRES_DB}
       - DJANGO_ALLOWED_HOSTS=peer-mingle.cc.gatech.edu
       - DJANGO_CSRF=https://peer-mingle.cc.gatech.edu
     depends_on:
-      - db
+      - postgres-db
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.django.rule=Host(`peer-mingle.cc.gatech.edu`)"
       - "traefik.http.routers.django.tls=true"
-  db:
+  postgres-db:
     image: postgres:16-alpine
     volumes:
       - postgres_data_prod:/var/lib/postgresql/data/
@@ -41,4 +44,6 @@ services:
       - "./certs/:/etc/certs/"
 
 volumes:
+  django_media_prod:
+  django_password_prod:
   postgres_data_prod:

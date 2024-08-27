@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+  <link rel="manifest" href="{% static 'images/site.webmanifest' %}">
+  <title>{% block title %}PeerMingle{% endblock %}</title>
+</head>
+
+<body>
+  <div class="wrapper">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a href="{% url 'courses' %}" class="app-name">
+        <!-- add logo here size should be 24px -->
+        <img src="{% static 'images/favicon.ico' %}" alt="logo" class="logo" style="width: 18px; height: 18px;">
+        PeerMingle
+      </a>
+    </div>
+    <div class="navbar-right">
+      {% if user.is_authenticated %}
+      <div class="student-name">Hi, {{ user.first_name }}!</div>
+      {% else %}
+      <!-- <a href="{% url 'login' %}">
+        <div class="student-name">Login</div>
+      </a> -->
+      {% endif %}
+    </div>
+    {% if user.is_authenticated %}
+    <form action="{% url 'logout' %}" method="post">
+      {% csrf_token %}
+      <div class="logout-button">
+        <button type="submit">Logout</button>
+      </div>
+      {% comment %} <button type="submit" class="logout-button">Logout</button> {% endcomment %}
+    </form>
+    {% endif %}
+  </nav>
+  <div class="breadcrumbs">
+    {% block breadcrumb %}
+    {% endblock %}
+  </div>
+  <div class="content">
+    {% block content %}
+    {% endblock %}
+  </div>
+
+  <footer class="footer">
+    <div class="footer-content">
+        <span>Made with ♥ for Georgia Tech students by <a href="https://linkedin.com/in/harshbaldwa/">Harshvardhan Baldwa</a></span>
+    </div>
+    <!-- <div class="footer-love">
+        Thank you for using the app!
+    </div> -->
+</footer>
+</div>
+</body>
+
+</html>

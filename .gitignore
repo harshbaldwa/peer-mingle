@@ -1,2 +1,21 @@
+# Important files (super secret)
 .env
 certs/
+media/
+
+# debugging
+local/
+
+# static files
+staticfiles/
+
+# django cleaning
+__pycache__/
+migrations/
+
+# vscode
+.vscode/
+
+# MacOS
+.DS_Store
+__MACOSX/

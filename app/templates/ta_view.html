@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- all feedbacks -->
+<div class="submission-section">
+    <a href="{% url 'ta_view_all' submission.assignment.id %}"><button class="back-button">Go Back</button></a>
+    <h3>{{ submission.student.first_name }} {{ submission.student.last_name }}'s Submission</h3>
+    <a href="/media/{{submission.file.name}}" class="download-link">Download Submission (.zip)</a>
+</div>
+{% for feedback in feedbacks %}
+    <b>{{ feedback.reviewer.first_name }} {{ feedback.reviewer.last_name }}'s Feedback</b>
+    <div class="comment">
+        <p class="comment-comment"><b>Comment</b>: <div style="white-space: pre-wrap;">{{ feedback.comment }}</div></p>
+    </div>
+    <!-- make an input box for grade -->
+    <form action="{% url 'grade' feedback.id %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="grade" value="{{ feedback.grade }}" placeholder="{{ submission.assignment.out_of }}">
+        <br>
+        <br>
+        <input type="text" name="comment" value="{{ feedback.comment_TA }}" placeholder="Comment">
+        <br>
+        {% if feedback.graded %}
+            <p>✔ - Graded</p>
+        {% endif %}
+        <br>
+        <button type="submit" class="submit-button">Grade</button>
+    </form>
+    <br>
+    <br>
+    <hr>
+{% endfor %}
+{% if next_submission %}
+    <a href="{% url 'ta_view' next_submission.id %}"><button class="back-button">Next Submission</button></a>
+    <br>
+    <br>
+{% endif %}
+{% endblock %}

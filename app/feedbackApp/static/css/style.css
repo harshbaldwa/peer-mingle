@@ -1,0 +1,631 @@
+/* Breadcrumbs Styles */
+.breadcrumbs {
+    font-size: 18px;
+    color: #666;
+    /* margin-bottom: 5px; */
+    margin-top: 10px;
+    text-align: center; /* Center-align the breadcrumbs */
+}
+
+.breadcrumbs a {
+    color: #666;
+    text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+    color: #333;
+    text-decoration: underline;
+}
+
+.breadcrumbs span {
+    font-weight: normal;
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: #333;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+}
+
+/* Navbar Brand */
+.navbar-brand {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.app-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+}
+
+/* Student Name */
+.student-name {
+    font-size: 18px;
+    font-weight: lighter;
+}
+
+.logout-button {
+    background-color: #333;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.logout-button button {
+    text-decoration: none;
+}
+
+.logout-button:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+}
+
+/* Navbar Right */
+.navbar-right {
+    display: flex;
+    align-items: center;
+}
+
+/* Common Classes */
+.center-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* Course List Styles */
+.course-list {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.course-list h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+/* Course Item Styles */
+.course-items {
+    list-style: none;
+    padding: 0;
+}
+
+.course-item {
+    background-color: white;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.course-item h3 {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.course-item p {
+    font-size: 16px;
+    color: #666;
+}
+
+/* Hover Effect */
+.course-item:hover {
+    background-color: #f9f9f9;
+    transform: translateY(-2px);
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+/* Course Item Link Styles */
+.course-link {
+    display: block;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.course-link:hover {
+    background-color: #f9f9f9;
+    transform: translateY(-2px);
+}
+
+/* Assignments Page Styles */
+.assignments-page {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.assignments-page h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+/* Assignment Item Styles */
+.assignment-list {
+    list-style: none;
+    margin-top: 50px;
+    padding: 0;
+}
+
+.assignment-item {
+    background-color: white;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s, transform 0.2s;
+    display: block;
+}
+
+.assignment-item h3 {
+    font-size: 20px;
+    margin: 0;
+}
+
+.assignment-item p {
+    font-size: 16px;
+    color: #666;
+    margin: 5px 0;
+}
+
+/* Hover Effect */
+.assignment-item:hover {
+    background-color: #f9f9f9;
+    transform: translateY(-2px);
+}
+
+/* Submission Info Styles */
+.submission-info {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: flex-end; /* Align items to the right */
+}
+
+.submission-info p {
+    font-size: 14px;
+    color: #888;
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Hover Effect */
+.assignment-item:hover {
+    background-color: #f9f9f9;
+    transform: translateY(-2px);
+}
+
+/* Assignment Detail Styles */
+.assignment-detail {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.assignment-detail h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.assignment-detail h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+/* Submission Section Styles */
+.submission-section {
+    margin-bottom: 20px;
+}
+
+.download-link {
+    display: inline-block;
+    background-color: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.download-link:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+}
+
+/* Comments and Reviews Section Styles */
+.comments-section,
+.reviews-section {
+    margin-bottom: 20px;
+}
+
+.comment,
+.review {
+    background-color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
+.comment a {
+    margin: 1px 0;
+    /* make it look like a button */
+    display: inline-block;
+    background-color: #333;
+    color: white;
+    /* padding: 5px 10px; */
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.comment a:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+}
+
+.review a {
+    margin: 5px 0;
+    /* make it look like a button */
+    display: inline-block;
+    background-color: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.review a:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+}
+
+.comment-comment {
+    /* keep it inside the parent div */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+}
+
+.comment-info {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 5px;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.edit-comment-button,
+.delete-comment-button {
+    background-color: #333;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.edit-comment-button:hover,
+.delete-comment-button:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+}
+
+/* Input Page Styles */
+.input-page {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.input-page h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+/* Comments Section Styles */
+.comments-section {
+    margin-top: 20px;
+}
+
+.comments-section h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/* Comment Input Styles */
+.comment-input {
+    margin-top: 20px;
+}
+
+.comment-textarea {
+    width: 97%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: vertical;
+}
+
+/* Grade Input Styles */
+.grade-input {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.grade-input-box {
+    width: 150px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Submit Button Styles */
+.submit-button {
+    background-color: #333;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.back-button {
+    background-color: #333;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 15px;
+    margin-top: 10px;
+}
+
+.back-button a {
+    color: white;
+    text-decoration: none;
+}
+
+.submit-button:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+}
+
+.back-button:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+}
+
+.login-page {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.login-page h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Login Form Styles */
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.form-group div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+label {
+    font-size: 16px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+}
+
+input[type="text"],
+input[type="password"] {
+    margin-left: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Login Button Styles */
+.login-button {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.login-button:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+}
+
+/* First Login Page Styles */
+.first-login-page {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.first-login-page h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.first-login-message {
+    font-size: 16px;
+    margin-bottom: 15px;
+    text-align: center;
+    color: #666;
+}
+
+/* Password Form Styles */
+.password-form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+input[type="password"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Change Password Button Styles */
+.change-password-button {
+    background-color: #333;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.change-password-button:hover {
+    background-color: #444;
+    transform: translateY(-2px);
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.wrapper {
+    min-height: 99vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+}
+
+/* Footer Styles */
+.footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0 5px 0;
+    /* margin-bottom: 10px; */
+}
+
+.footer-content {
+    margin-bottom: 10px;
+}
+
+.footer-content span {
+    font-weight: lighter;
+}
+
+.footer-content span a {
+    color: white;
+    text-decoration: underline;
+}
+
+/* Footer Love Message Styles */
+.footer-love {
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .navbar-right {
+        margin-top: 10px;
+    }
+
+    .course-list {
+        padding: 10px;
+    }
+    
+    .course-item {
+        padding: 10px;
+    }
+
+    /* Assignments Page styles adjustments */
+    .assignments-page {
+        margin: 10px auto;
+        padding: 10px;
+    }
+
+    .assignments-page h2 {
+        font-size: 20px;
+    }
+
+    /* Assignment Item styles adjustments */
+    .assignment-item {
+        padding: 10px;
+    }
+    
+    .assignment-item h3 {
+        font-size: 18px;
+    }
+
+    .assignment-item p {
+        font-size: 14px;
+    }
+}

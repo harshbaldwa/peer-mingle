@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block breadcrumb %}
+<a href="{% url 'courses' %}">Courses</a> &raquo;
+<a href="{{ submission.assignment.course.get_absolute_url }}">{{ submission.assignment.course.code }} - {{submission.assignment.course.semester }} {{ submission.assignment.course.year }}</a> &raquo;
+<a href="{{ feedback.assignment.get_absolute_url }}">{{ feedback.assignment.name }}</a> &raquo;
+<a href="{{ feedback.get_absolute_url }}">{{ feedback.student.first_name }}'s Submission</a>
+{% endblock %}
+
+{% block content %}
+<div class="input-page">
+    <h2>Assignment Feedback</h2>
+    <div class="submission-section">
+        <h3>{{ submission.student.first_name }}'s Submission</h3>
+        <p><b>Submitted at:</b> {{ submission.date }}</p>
+        <a href="/media/{{submission.file.name}}" class="download-link">Download Submission (.zip)</a>
+        <!-- make a small footnote -->
+        <p style="font-size: small;">Note: Please delete the submission files after you have provided feedback for this submission.</p>
+    </div>
+    <div class="comments-section">
+        <h3>Comments Received</h3>
+        {% if comments %}
+        {% for comment in comments %}
+        {% if comment.reviewer == user %}
+        <div class="comment">
+            <p class="comment-comment"><b>Comment</b>: <div style="white-space: pre-wrap;">{{ comment.comment }}</div></p>
+            <p class="comment-info">Posted by You on {{ comment.created_at }}</p>
+            {% if not due_date_passed %}
+            <div class="comment-actions">
+                <a href="{% url 'edit_comment' feedback.id %}"><button class="edit-comment-button">Edit</button></a>
+                <a href="{% url 'delete_comment' feedback.id %}"><button
+                        class="delete-comment-button">Delete</button></a>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% else %}
+        <p>You have not submitted the feedback yet.</p>
+        {% endif %}
+    </div>
+    {% if feedback.issued %}
+    <p>You have submitted comment for this submission.</p>
+    {% elif not due_date_passed %}
+    <form action="{% url 'feedback' feedback.id %}" method="post">
+        {% csrf_token %}
+        <div class="comment-input">
+            <h3>Your Comment</h3>
+            <p>
+                Write about the Execution, Structure/Implementation, Style/Documentation, Strengths and suggestions regarding the code.<br><br>
+                1. <b>Program execution</b>: Does the program compile and execute without error, and is the output clear?<br>
+                2. <b>Program structure and implementation</b>: Is the structure of the code clear and easy to follow and are the implementation choices good?<br>
+                3. <b>Program style and documentation</b>: Are the comments useful and at the appropriate level, is the program easy to follow visually through indenting and blank lines, and does the program avoid copying the same code in multiple places (redundancy)?<br>
+                4. <b>Overall strengths</b> of the code.<br>
+                5. Any <b>constructive suggestions</b> for improvement.
+            </p>
+            <textarea class="comment-textarea" name="comments" placeholder="Enter your comment here"
+                required>{{ feedback.comment }}</textarea>
+        </div>
+        <!-- <div class="grade-input">
+            <h3>Grade</h3>
+            <input type="number" class="grade-input-box" name="grade" value="{{feedback.grade}}"
+                placeholder="Enter grade from 0 to {{ submission.assignment.out_of }}"
+                max="{{ submission.assignment.out_of }}" min="0" required>
+        </div> -->
+        <button type="submit" class="submit-button">Submit Feedback</button>
+        <!-- <label for="comments">Comments:</label><br>
+        <textarea name="comments" id="comments" cols="30" rows="10" required>{{ feedback.comment }}</textarea><br>
+        <label for="grade">Grade:</label><br>
+        <input type="number" name="grade" id="grade" value="{{ feedback.grade }}" max="{{ feedback.assignment.out_of }}" min="0" required><br>
+        <input type="submit" value="Submit"> -->
+    </form>
+    {% else %}
+    <p>Feedback submission deadline has passed.</p>
+    {% endif %}
+    <a href="{{ feedback.assignment.get_absolute_url }}"><button class="back-button">Go Back</button></a>
+</div>
+{% endblock %}

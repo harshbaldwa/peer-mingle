@@ -1,5 +1,13 @@
+# django
 Django==5.1
+# database
 django-environ==0.11.2
 psycopg2-binary==2.9.9
+# production server
 gunicorn==23.0.0
 whitenoise==6.7.0
+
+# peer-mingle
+openpyxl==3.1.5
+pyyaml==6.0.2
+networkx==3.3

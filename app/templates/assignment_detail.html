@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block breadcrumb %}
+<a href="{% url 'courses' %}">Courses</a> &raquo;
+<a href="{{ assignment.course.get_absolute_url }}">{{ assignment.course.code }} - {{ assignment.course.semester }} {{ assignment.course.year }}</a> &raquo;
+<a href="{{ assignment.get_absolute_url }}">{{ assignment.name }}</a>
+{% endblock %}
+
+{% block content %}
+<div class="assignment-detail">
+    <h2>{{ assignment.name }} Details</h2>
+    <p><b>Due Date</b>: {{ assignment.due_date }}</p>
+    {% if submission %}
+    <div class="submission-section">
+        <h3>Your Submission</h3>
+        <p><b>Submitted at</b>: {{ submission.date }} </p>
+        <a href="/media/{{submission.file.name}}" class="download-link">Download your submission (.zip)</a>
+    </div>
+    <div class="comments-section">
+        <h3>Comments Received</h3>
+        {% if comments %}
+        {% for comment in comments %}
+        <div class="comment">
+            <!-- <p><b>Grade</b>: {{ comment.grade }} / {{ comment.assignment.out_of }}</p> -->
+            <p><b>Comment</b>: <div style="white-space: pre-wrap;">{{ comment.comment }}</div></p>
+            {% if assignment.reviewing_type_anonymous %}
+                <p class="comment-info">Posted by Anonymous {{ comment.reviewer.get_random_name }} on {{ comment.created_at }}</p>
+            {% else %}
+                <p class="comment-info">Posted by {{ comment.reviewer.first_name }} on {{ comment.created_at }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>No comments yet</p>
+        {% endif %}
+    </div>
+    <div class="reviews-section">
+        <h3>Pending Reviews</h3>
+        {% if pending_feedbacks %}
+        {% for feedback in pending_feedbacks %}
+        <div class="review">
+            <a class="review-info" href="{{ feedback.get_absolute_url }}">{{ feedback.student.first_name }} -
+                {{ feedback.assignment.name }}</a>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p>No pending reviews</p>
+        {% endif %}
+        {% if completed_feedbacks %}
+        <h3>Completed Reviews</h3>
+        {% for feedback in completed_feedbacks %}
+        <div class="review">
+            <a class="review-info" href="{{ feedback.get_absolute_url }}">{{ feedback.student.first_name }} -
+                {{ feedback.assignment }}</a>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+    {% else %}
+        {% if user.assign_feedbacks %}
+            <p>You have not submitted this assignment.</p>
+        {% else %}
+            <p>You are an Audit student. You will not be participating in Peer Feedbacks.</p>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

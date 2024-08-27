@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block breadcrumb %}
+<a href="{% url 'courses' %}">Courses</a> &raquo;
+<a href="{{ course.get_absolute_url }}">{{ course.code }} - {{ course.semester }} {{ course.year }}</a>
+{% endblock %}
+
+{% block content %}
+<div class="assignments-page">
+    <h2>Assignments for {{ course.code }} - {{ course.semester }} {{ course.year }}</h2>
+    <h3>{{ course.name }}</h3>
+    <div class="assignment-list">
+        {% for assignment in assignments %}
+        <a href="{{ assignment.get_absolute_url }}" class="assignment-item">
+            <h3>{{assignment.name}}</h3>
+            <p>{{assignment.description}}</p>
+            <p><b>Due Date</b>: {{ assignment.due_date }}</p>
+            <div class="submission-info">
+                <p>Submitted:
+                    {% if assignment.submitted %}
+                        Yes
+                </p>
+                {% if pending_feedbacks %}
+                <p>Reviews Pending: {{ pending_feedbacks }}</p>
+                {% else %}
+                <p>Reviews Completed</p>
+                {% endif %}
+                    {% else %}
+                        No
+                </p>
+                    {% endif %}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
