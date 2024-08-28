@@ -67,6 +67,8 @@ class SubmissionAdmin(admin.ModelAdmin):
 
 class FeedbackAdmin(admin.ModelAdmin):
     list_display = ["assignment", "student", "reviewer", "issued", "graded"]
+    list_filter = ["assignment"]
+    search_fields = ["submission__student__username", "reviewer__username"]
 
 
 # Register your models here.
