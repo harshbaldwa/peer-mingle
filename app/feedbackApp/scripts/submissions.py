@@ -1,19 +1,19 @@
-import os
 import shutil
 from pathlib import Path
 
 import yaml
+from yaml import CLoader as Loader
 
 
 def create_submissions(filepath, UserModel, assignment, SubmissionModel):
     path = Path(filepath).parent
     shutil.unpack_archive(filepath, path)
     folder = list(path.glob("assignment*"))[0]
-    cwd = os.getcwd()
-    os.chdir(folder)
-    submission_data = yaml.safe_load(open("submission_metadata.yml"))
+    yaml_file = list(folder.glob("*.yml"))[0]
+    submissions = []
+    submission_data = yaml.load(open(yaml_file), Loader)
     for submission in submission_data:
-        subfolder = submission
+        subfolder = folder / submission
         try:
             try:
                 gt_id = submission_data[submission][":submitters"][0][":sid"]
@@ -28,14 +28,15 @@ def create_submissions(filepath, UserModel, assignment, SubmissionModel):
             file = shutil.make_archive(
                 f"{student.username}", "zip", subfolder
             )
-            submission = SubmissionModel.objects.create(
-                assignment=assignment,
-                student=student,
-                file=f"{student.username}.zip",
-                date=created_at,
+            submissions.append(
+                SubmissionModel(
+                    assignment=assignment,
+                    student=student,
+                    file=f"{student.username}.zip",
+                    date=created_at,
+                )
             )
             shutil.move(file, path)
         shutil.rmtree(subfolder)
     shutil.rmtree(folder)
-    os.chdir(cwd)
-    # os.remove(filepath)
+    SubmissionModel.objects.bulk_create(submissions)
