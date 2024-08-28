@@ -7,7 +7,6 @@ import string
 import openpyxl
 
 
-# FIXME: Batch the creation of users
 def save_to_file(file_path, initial_passwords):
     file_path = file_path.replace("media", "passwords")
     path = Path(file_path)
@@ -26,10 +25,12 @@ def save_to_file(file_path, initial_passwords):
 
 
 def create_roster(file_path, UserModel, course):
-    # get the file path of the roster
     wb = openpyxl.load_workbook(file_path)
     sh = wb.active
     initial_passwords = {}
+    objs_student = []
+    objs_ta = []
+    objs_instructor = []
     for r in sh.rows:
         # skip the first row
         if r[0].value == "Name":
@@ -50,32 +51,45 @@ def create_roster(file_path, UserModel, course):
                 string.ascii_lowercase + string.digits, k=12))
             initial_passwords[gt_username] = password
             if is_student:
-                student = UserModel.objects.create_user(
-                    username=gt_username,
-                    email=email,
-                    first_name=first_name,
-                    last_name=last_name,
-                    is_student=is_student,
-                    assign_feedbacks=assign_feedbacks,
-                    gt_id=gt_id,
-                    password=password,
+                objs_student.append(
+                    UserModel(
+                        username=gt_username,
+                        email=email,
+                        first_name=first_name,
+                        last_name=last_name,
+                        is_student=is_student,
+                        assign_feedbacks=assign_feedbacks,
+                        gt_id=gt_id,
+                        password=password,
+                    )
                 )
-                course.students.add(student)
             else:
-                staff = UserModel.objects.create_staffuser(
-                    username=gt_username,
-                    email=email,
-                    first_name=first_name,
-                    last_name=last_name,
-                    is_student=is_student,
-                    gt_id=gt_id,
-                    password=password,
-                )
                 if type == "Ta":
-                    course.teaching_assistants.add(staff)
+                    objs_ta.append(
+                        UserModel(
+                            username=gt_username,
+                            email=email,
+                            first_name=first_name,
+                            last_name=last_name,
+                            is_student=is_student,
+                            assign_feedbacks=assign_feedbacks,
+                            gt_id=gt_id,
+                            password=password,
+                        )
+                    )
                 else:
-                    course.instructor.add(staff)
-            save_to_file(file_path, initial_passwords)
+                    objs_instructor.append(
+                        UserModel(
+                            username=gt_username,
+                            email=email,
+                            first_name=first_name,
+                            last_name=last_name,
+                            is_student=is_student,
+                            assign_feedbacks=assign_feedbacks,
+                            gt_id=gt_id,
+                            password=password,
+                        )
+                    )
         else:
             person = UserModel.objects.get(gt_id=gt_id)
             if is_student:
@@ -85,4 +99,14 @@ def create_roster(file_path, UserModel, course):
                     course.teaching_assistants.add(person)
                 else:
                     course.instructor.add(person)
+
+    save_to_file(file_path, initial_passwords)
+
+    students = UserModel.objects.bulk_create(objs_student)
+    tas = UserModel.objects.bulk_create(objs_ta)
+    instructors = UserModel.objects.bulk_create(objs_instructor)
+    course.students.add(*students)
+    course.teaching_assistants.add(*tas)
+    course.instructor.add(*instructors)
+
     wb.close()
