@@ -165,10 +165,12 @@ class Assignment(models.Model):
     )
     num_reviewers = models.IntegerField(default=3)
     out_of = models.IntegerField(default=4)
-    # is_group = models.BooleanField(default=False)
     reviewing_type_anonymous = models.BooleanField(default=False)
     gradescope_submissions = models.FileField(upload_to="", blank=True)
     due_date = models.DateTimeField(blank=True, null=True)
+    status = models.BooleanField(default=False, editable=False)
+    gradebook = models.FileField(
+        upload_to="", blank=True, max_length=200)
 
     def __str__(self):
         return self.name + " - " + self.course.code
@@ -187,6 +189,12 @@ class Assignment(models.Model):
 
     def create_feedbacks(self):
         feedbacks.create_feedbacks(self, GTUser, Submission, Feedback)
+
+    def create_gradebook(self):
+        if self.feedback.filter(graded=False).exists():
+            return False
+        gradebook.create_assignment_gradebook(self)
+        return True
 
     def who_has_access(self, user):
         return self.course.who_has_access(user)

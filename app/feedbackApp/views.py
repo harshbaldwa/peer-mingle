@@ -159,12 +159,25 @@ def delete_comment(request, id):
 def ta_view_assignment(request, ass_id):
     assignment = Assignment.objects.get(id=ass_id)
     submissions = Submission.objects.filter(assignment=assignment)
-    for submission in submissions:
-        graded = True
-        feedbacks = Feedback.objects.filter(submission=submission, issued=True)
+    for i, submission in enumerate(submissions, start=1):
+        submission.number = i
+        feedbacks = Feedback.objects.filter(submission=submission)
+        status = "Not Ready"
+        number_issued = 0
+        number_graded = 0
+        number_total = len(feedbacks)
         for feedback in feedbacks:
-            graded = feedback.graded and graded
-        submission.graded = graded
+            if feedback.graded:
+                number_graded += 1
+            if feedback.issued:
+                number_issued += 1
+        if number_issued == number_total:
+            if number_graded != number_total:
+                status = f"Grading - {100*number_graded/number_total:.0f} %"
+            else:
+                status = "Graded"
+        submission.status = status
+        submission.number_issued_percent = 100 * number_issued / number_total
 
     return render(request, "ta_view_all.html", {
         "assignment": assignment,
@@ -178,10 +191,8 @@ def ta_view_feedback(request, sub_id):
     # find all the submissions for this assignment
     submission = Submission.objects.get(id=sub_id)
     feedbacks = Feedback.objects.filter(submission=submission, issued=True)
-    next_submission = Submission.objects.filter(id=sub_id + 1)
-    if next_submission:
-        next_submission = next_submission[0]
-    else:
+    next_submission = Submission.objects.filter(id=sub_id + 1).first()
+    if not next_submission:
         next_submission = False
 
     return render(request, "ta_view.html", {

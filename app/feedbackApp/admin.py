@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserChangeForm, CustomUserCreationForm
@@ -10,7 +10,7 @@ class GTUserAdmin(UserAdmin):
     form = CustomUserChangeForm
     model = GTUser
     list_display = ["email", "first_name", "gt_id",
-                    "is_staff", "is_active", "should_change_password"]
+                    "is_staff", "should_change_password"]
     fieldsets = UserAdmin.fieldsets + (
         (None, {"fields": ("is_student", "gt_id")}),
     )
@@ -18,14 +18,14 @@ class GTUserAdmin(UserAdmin):
         (None, {"fields": ("is_student", "gt_id")}),
     )
     ordering = ["email"]
-    search_fields = ["email"]
+    search_fields = ["email", "first_name", "gt_id"]
 
 
 class CourseAdmin(admin.ModelAdmin):
     list_display = ["name", "code", "semester", "year"]
     ordering = ["name"]
     search_fields = ["name", "code"]
-    actions = ["create_roster", "download_passwords"]
+    actions = ["create_roster"]
 
     @admin.action(description="Create Roster and Gradebook")
     def create_roster(self, request, queryset):
@@ -35,9 +35,9 @@ class CourseAdmin(admin.ModelAdmin):
 
 
 class AssignmentAdmin(admin.ModelAdmin):
-    list_display = ["name", "course"]
+    list_display = ["name", "course", "status", "gradebook"]
     ordering = ["name"]
-    actions = ["make_submissions", "create_feedbacks"]
+    actions = ["make_submissions", "create_feedbacks", "create_gradebook"]
 
     @admin.action(description="Make submissions")
     def make_submissions(self, request, queryset):
@@ -50,6 +50,19 @@ class AssignmentAdmin(admin.ModelAdmin):
         for assignment in queryset:
             assignment.create_feedbacks()
         self.message_user(request, "Feedback(s) created successfully")
+
+    @admin.action(description="Create gradebook")
+    def create_gradebook(self, request, queryset):
+        for assignment in queryset:
+            status = assignment.create_gradebook()
+            if status:
+                messages.add_message(
+                    request, messages.SUCCESS,
+                    f"Gradebook for {assignment} created successfully"
+                )
+            else:
+                messages.add_message(request, messages.ERROR,
+                                     f"{assignment} not graded yet")
 
 
 class SubmissionAdmin(admin.ModelAdmin):
@@ -67,8 +80,29 @@ class SubmissionAdmin(admin.ModelAdmin):
 
 class FeedbackAdmin(admin.ModelAdmin):
     list_display = ["assignment", "student", "reviewer", "issued", "graded"]
-    list_filter = ["assignment"]
+    list_filter = ["assignment", "graded"]
     search_fields = ["submission__student__username", "reviewer__username"]
+    # REMOVEME: actions for grading feedbacks
+    actions = ["issue_feedbacks", "grade_feedbacks"]
+
+    # REMOVEME: action for issuing feedbacks
+    @admin.action(description="Issue feedbacks")
+    def issue_feedbacks(self, request, queryset):
+        for feedback in queryset:
+            feedback.comment = "This is a sample comment"
+            feedback.issued = True
+            feedback.save()
+        self.message_user(request, "Feedback(s) issued successfully")
+
+    # REMOVEME: action for grading feedbacks
+    @admin.action(description="Grade feedbacks")
+    def grade_feedbacks(self, request, queryset):
+        for feedback in queryset:
+            feedback.graded = True
+            # feedback.grade = random.randint(0, feedback.assignment.out_of)
+            feedback.grade = 4
+            feedback.save()
+        self.message_user(request, "Feedback(s) graded successfully")
 
 
 # Register your models here.
