@@ -6,7 +6,6 @@ services:
     command: bash -c 'while !</dev/tcp/postgres-db/5432; do sleep 1; done; python manage.py makemigrations --noinput; python manage.py makemigrations feedbackApp --noinput; python manage.py migrate --noinput; python manage.py collectstatic --noinput; gunicorn --bind 0.0.0.0:8000 feedback.wsgi --workers 4 --timeout 600'
     volumes:
       - django_media_prod:/home/app/media
-      - django_password_prod:/home/app/passwords
     expose:
       - 8000
     environment:
@@ -46,5 +45,4 @@ services:
 
 volumes:
   django_media_prod:
-  django_password_prod:
   postgres_data_prod:

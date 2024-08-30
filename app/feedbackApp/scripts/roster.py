@@ -9,20 +9,15 @@ import openpyxl
 
 
 def save_to_file(file_path, initial_passwords):
-    file_path = file_path.replace("media", "passwords")
-    path = Path(file_path)
-    json_file_path = path.parent / "initial_passwords.json"
-    json_file_path.parent.mkdir(parents=True, exist_ok=True)
-    # append to the json file if it already exists
-    if json_file_path.exists():
-        with open(json_file_path, "r") as f:
+    pass_file = Path(file_path).parent / "initial_passwords.json"
+
+    if pass_file.exists():
+        with open(pass_file, "r") as f:
             data = json.load(f)
-            data.update(initial_passwords)
-        with open(json_file_path, "w") as f:
-            json.dump(data, f)
-    else:
-        with open(json_file_path, "w+") as f:
-            json.dump(initial_passwords, f)
+            initial_passwords.update(data)
+
+    with open(pass_file, "w") as f:
+        json.dump(initial_passwords, f)
 
 
 def create_roster(file_path, UserModel, course):
@@ -100,6 +95,7 @@ def create_roster(file_path, UserModel, course):
                     course.teaching_assistants.add(person)
                 else:
                     course.instructor.add(person)
+    wb.close()
 
     save_to_file(file_path, initial_passwords)
 
@@ -112,5 +108,3 @@ def create_roster(file_path, UserModel, course):
     course.teaching_assistants.update(is_staff=True)
     course.instructor.add(*instructors)
     course.instructor.update(is_staff=True)
-
-    wb.close()
