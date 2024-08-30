@@ -11,3 +11,4 @@ whitenoise==6.7.0
 openpyxl==3.1.5
 pyyaml==6.0.2
 networkx==3.3
+pandas==2.2.2

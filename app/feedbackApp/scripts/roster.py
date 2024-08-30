@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from pathlib import Path
 
 import json
@@ -60,7 +61,7 @@ def create_roster(file_path, UserModel, course):
                         is_student=is_student,
                         assign_feedbacks=assign_feedbacks,
                         gt_id=gt_id,
-                        password=password,
+                        password=make_password(password, None, "md5"),
                     )
                 )
             else:
@@ -74,7 +75,7 @@ def create_roster(file_path, UserModel, course):
                             is_student=is_student,
                             assign_feedbacks=assign_feedbacks,
                             gt_id=gt_id,
-                            password=password,
+                            password=make_password(password, None, "md5"),
                         )
                     )
                 else:
@@ -87,7 +88,7 @@ def create_roster(file_path, UserModel, course):
                             is_student=is_student,
                             assign_feedbacks=assign_feedbacks,
                             gt_id=gt_id,
-                            password=password,
+                            password=make_password(password, None, "md5"),
                         )
                     )
         else:
@@ -105,8 +106,11 @@ def create_roster(file_path, UserModel, course):
     students = UserModel.objects.bulk_create(objs_student)
     tas = UserModel.objects.bulk_create(objs_ta)
     instructors = UserModel.objects.bulk_create(objs_instructor)
+
     course.students.add(*students)
     course.teaching_assistants.add(*tas)
+    course.teaching_assistants.update(is_staff=True)
     course.instructor.add(*instructors)
+    course.instructor.update(is_staff=True)
 
     wb.close()

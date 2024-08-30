@@ -27,10 +27,10 @@ class CourseAdmin(admin.ModelAdmin):
     search_fields = ["name", "code"]
     actions = ["create_roster", "download_passwords"]
 
-    @admin.action(description="Create Roster")
+    @admin.action(description="Create Roster and Gradebook")
     def create_roster(self, request, queryset):
         for course in queryset:
-            course.create_roster()
+            course.create_roster_gradebook()
         self.message_user(request, "Roster(s) created successfully")
 
 

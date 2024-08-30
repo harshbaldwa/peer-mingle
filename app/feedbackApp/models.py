@@ -4,7 +4,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
 
-from .scripts import names, submissions, feedbacks, roster
+from .scripts import names, submissions, feedbacks, roster, gradebook
 
 SEMESTER_CHOICES = (
     ("Fall", "Fall"),
@@ -114,22 +114,27 @@ class Course(models.Model):
         GTUser, related_name="course-instructor+", blank=True)
     teaching_assistants = models.ManyToManyField(
         GTUser, related_name="course-teaching-assistant+", blank=True)
-
     students = models.ManyToManyField(
         GTUser, related_name="course-students+", blank=True)
-    # upload this file to media/courses/<slug>/
+
     roster_file = models.FileField(upload_to="", blank=True)
+    gradebook = models.FileField(upload_to="", blank=True)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(f"{self.code}-{self.semester}-{self.year}")
         path = f"courses/{self.slug}/"
-        # if roster file is uploaded, change the name to roster.xlsx
+        # only do the following steps if the course is being created
         if self.roster_file:
             self.roster_file.name = path + "roster.xlsx"
+        if self.gradebook:
+            self.gradebook.name = path + "gradebook.csv"
         super().save(*args, **kwargs)
 
-    def create_roster(self):
-        roster.create_roster(self.roster_file.path, GTUser, self)
+    def create_roster_gradebook(self):
+        if self.roster_file:
+            roster.create_roster(self.roster_file.path, GTUser, self)
+        if self.gradebook:
+            gradebook.create_gradebook(self.gradebook.path)
 
     @property
     def get_absolute_url(self):
