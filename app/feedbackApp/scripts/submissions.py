@@ -7,6 +7,7 @@ from yaml import CLoader as Loader
 
 def create_submissions(filepath, UserModel, assignment, SubmissionModel):
     path = Path(filepath).parent
+    prefix = Path(*path.parts[2:])
     shutil.unpack_archive(filepath, path)
     folder = list(path.glob("assignment*"))[0]
     yaml_file = list(folder.glob("*.yml"))[0]
@@ -32,7 +33,7 @@ def create_submissions(filepath, UserModel, assignment, SubmissionModel):
                 SubmissionModel(
                     assignment=assignment,
                     student=student,
-                    file=f"{student.username}.zip",
+                    file=f"{prefix}/{student.username}.zip",
                     date=created_at,
                 )
             )
