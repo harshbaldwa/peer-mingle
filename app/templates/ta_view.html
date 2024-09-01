@@ -15,15 +15,15 @@
     <!-- make an input box for grade -->
     <form action="{% url 'grade' feedback.id %}" method="post">
         {% csrf_token %}
-        <input type="text" name="grade" value="{{ feedback.grade }}" placeholder="{{ submission.assignment.out_of }}">
-        <br>
-        <br>
-        <input type="text" name="comment" value="{{ feedback.comment_TA }}" placeholder="Comment">
-        <br>
-        {% if feedback.graded %}
-            <p>✔ - Graded</p>
-        {% endif %}
-        <br>
+        <div class="ta">
+            <input type="number" name="grade" value={{ feedback.grade }} placeholder={{ submission.assignment.out_of }} max={{ max_grade }} min=0 required>
+            {% comment %} <br>
+            <br> {% endcomment %}
+            <input type="text" name="comment" value="{{ feedback.comment_TA }}" placeholder="Comment">
+            {% if feedback.graded %}
+                <p>✔ - Graded</p>
+            {% endif %}
+        </div>
         <button type="submit" class="submit-button">Grade</button>
     </form>
     <br>

@@ -17,6 +17,9 @@
         <a href="/media/{{submission.file.name}}" class="download-link">Download your submission (.zip)</a>
     </div>
     <div class="comments-section">
+        {% if submission_type == "Late" %}
+        <p class="late-warning">You have submitted this assignment late. You will not receive peer feedback on your submission.</p>
+        {% else %}
         <h3>Comments Received</h3>
         {% if comments %}
         {% for comment in comments %}
@@ -33,16 +36,21 @@
         {% else %}
         <p>No comments yet</p>
         {% endif %}
+        {% endif %}
     </div>
     <div class="reviews-section">
         <h3>Pending Reviews</h3>
         {% if pending_feedbacks %}
-        {% for feedback in pending_feedbacks %}
-        <div class="review">
-            <a class="review-info" href="{{ feedback.get_absolute_url }}">{{ feedback.student.first_name }} -
-                {{ feedback.assignment.name }}</a>
-        </div>
-        {% endfor %}
+        {% if assignment.due_date_passed %}
+        <p>Deadline Passed</p>
+        {% else %}
+            {% for feedback in pending_feedbacks %}
+            <div class="review">
+                <a class="review-info" href="{{ feedback.get_absolute_url }}">{{ feedback.student.first_name }} -
+                    {{ feedback.assignment.name }}</a>
+            </div>
+            {% endfor %}
+        {% endif %}
         {% else %}
         <p>No pending reviews</p>
         {% endif %}

@@ -9,18 +9,16 @@
         <th scope="col"><h3>Number</h3></th>
         <th scope="col"><h3>Student</h3></th>
         <th scope="col"><h3>Status</h3></th>
-        <th scope="col"><h3>Issued</h3></th>
     </tr>
     <!-- add some vertical space -->
     <tr>
-        <td colspan="4">&nbsp;</td>
+        <td colspan="3">&nbsp;</td>
     </tr>
     {% for submission in submissions %}
     <tr>
         <td style="text-align: center;">{{ submission.number }}.</td>
         <td style="text-align: center;"><a href="{% url 'ta_view' submission.id %}">{{ submission.student.first_name }} {{ submission.student.last_name }}</a></td>
         <td style="text-align: center;">{{ submission.status }}</td>
-        <td style="text-align: center;">{{ submission.number_issued_percent|floatformat:0 }}%</td>
     </tr>
     <tr>
         <td colspan="1">&nbsp;</td>

@@ -49,15 +49,21 @@ def course_view(request, slug):
     # check if the user submitted this assignment
     for assignment in assignments:
         try:
-            Submission.objects.get(
+            submission = Submission.objects.get(
                 assignment=assignment, student=request.user)
             assignment.submitted = True
-            # check how many feedbacks the user has to issue
-            pending_feedbacks_count = Feedback.objects.filter(
-                assignment=assignment,
-                reviewer=request.user,
-                issued=False).count()
-            assignment.pending_feedbacks = pending_feedbacks_count
+            assignment.is_late = submission.is_late
+            # if deadline is passed let me know
+            if assignment.due_date > timezone.now():
+                pending_feedbacks_count = Feedback.objects.filter(
+                    assignment=assignment,
+                    reviewer=request.user,
+                    issued=False).count()
+                assignment.pending_feedbacks = pending_feedbacks_count
+                assignment.deadline_passed = False
+            else:
+                assignment.pending_feedbacks = 0
+                assignment.deadline_passed = True
         except Submission.DoesNotExist:
             assignment.submitted = False
     return render(request, "course_detail.html", {
@@ -73,9 +79,14 @@ def assignment_view(request, slug, id):
         return render(request, "403.html", {
             "message": "You don't have access to this assignment."
         })
+    submission_type = "Missing"
     try:
         submission = Submission.objects.get(
             assignment=assignment, student=request.user)
+        if submission.is_late:
+            submission_type = "Late"
+        else:
+            submission_type = "On Time"
     except Submission.DoesNotExist:
         submission = None
     feedbacks = Feedback.objects.filter(
@@ -83,13 +94,15 @@ def assignment_view(request, slug, id):
     pending_feedbacks = feedbacks.filter(issued=False)
     completed_feedbacks = feedbacks.filter(issued=True)
     comments = Feedback.objects.filter(submission=submission, issued=True)
+    assignment.due_date_passed = assignment.due_date < timezone.now()
 
     return render(request, "assignment_detail.html", {
         "assignment": assignment,
         "submission": submission,
         "pending_feedbacks": pending_feedbacks,
         "completed_feedbacks": completed_feedbacks,
-        "comments": comments
+        "comments": comments,
+        "submission_type": submission_type
     })
 
 
@@ -159,6 +172,7 @@ def delete_comment(request, id):
 def ta_view_assignment(request, ass_id):
     assignment = Assignment.objects.get(id=ass_id)
     submissions = Submission.objects.filter(assignment=assignment)
+    deadline_passed = timezone.now() > assignment.due_date
     for i, submission in enumerate(submissions, start=1):
         submission.number = i
         feedbacks = Feedback.objects.filter(submission=submission)
@@ -166,19 +180,18 @@ def ta_view_assignment(request, ass_id):
         number_issued = 0
         number_graded = 0
         number_total = len(feedbacks)
+
         for feedback in feedbacks:
             if feedback.graded:
                 number_graded += 1
             if feedback.issued:
                 number_issued += 1
-        if number_issued == number_total:
-            if number_graded != number_total:
-                status = f"Grading - {100*number_graded/number_total:.0f} %"
+        if number_issued == number_total or deadline_passed:
+            if number_graded != number_issued:
+                status = f"Grading - {100*number_graded/number_issued:.0f} %"
             else:
                 status = "Graded"
         submission.status = status
-        submission.number_issued_percent = 100 * number_issued / number_total
-
     return render(request, "ta_view_all.html", {
         "assignment": assignment,
         "submissions": submissions
@@ -190,6 +203,7 @@ def ta_view_assignment(request, ass_id):
 def ta_view_feedback(request, sub_id):
     # find all the submissions for this assignment
     submission = Submission.objects.get(id=sub_id)
+    max_grade = submission.assignment.out_of
     feedbacks = Feedback.objects.filter(submission=submission, issued=True)
     next_submission = Submission.objects.filter(id=sub_id + 1).first()
     if not next_submission:
@@ -198,7 +212,8 @@ def ta_view_feedback(request, sub_id):
     return render(request, "ta_view.html", {
         "submission": submission,
         "feedbacks": feedbacks,
-        "next_submission": next_submission
+        "next_submission": next_submission,
+        "max_grade": max_grade
     })
 
 

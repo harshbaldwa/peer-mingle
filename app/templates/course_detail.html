@@ -18,9 +18,15 @@
             <div class="submission-info">
                 <p>Submitted:
                     {% if assignment.submitted %}
+                        {% if assignment.is_late %}
+                        Yes (Late)
+                        {% else %}
                         Yes
+                        {% endif %}
                 </p>
-                {% if assignment.pending_feedbacks %}
+                {% if assignment.deadline_passed %}
+                <p>Deadline Passed</p>
+                {% elif assignment.pending_feedbacks %}
                 <p>Reviews Pending: {{ assignment.pending_feedbacks }}</p>
                 {% else %}
                 <p>Reviews Completed</p>

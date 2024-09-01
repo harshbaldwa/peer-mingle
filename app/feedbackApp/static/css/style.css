@@ -384,6 +384,39 @@
     border-radius: 5px;
 }
 
+/* TA View */
+
+.ta {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* items should be next to each other */
+    display: flex;
+    align-items: center;
+}
+
+.ta input[type="text"] {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 50%;
+}
+
+.ta input[type="number"] {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    width: 30%;
+}
+
+.ta p {
+    margin: auto;
+}
+
 /* Submit Button Styles */
 .submit-button {
     background-color: #333;
