@@ -16,7 +16,7 @@ urlpatterns = [
     path("comment/edit/<int:id>", views.edit_comment, name="edit_comment"),
     path("comment/delete/<int:id>",
          views.delete_comment, name="delete_comment"),
-    path("grade/<int:ass_id>",
+    path("grade/<str:ass_id>",
          views.ta_view_assignment, name="ta_view_all"),
     path("grade/submission/<int:sub_id>",
          views.ta_view_feedback, name="ta_view"),

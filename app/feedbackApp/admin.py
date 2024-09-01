@@ -1,5 +1,8 @@
+import os
+
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
+from django.utils.html import format_html
 
 from .forms import CustomUserChangeForm, CustomUserCreationForm
 from .models import Assignment, Course, Feedback, GTUser, Submission
@@ -22,10 +25,17 @@ class GTUserAdmin(UserAdmin):
 
 
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ["name", "code", "semester", "year"]
+    list_display = ["name", "code", "semester", "year", "passwords"]
     ordering = ["name"]
     search_fields = ["name", "code"]
     actions = ["create_roster"]
+
+    @admin.display(description="Passwords")
+    def passwords(self, obj):
+        return format_html(
+            '<a href="{0}">View</a>', obj.roster.url.replace(
+                "roster.xlsx", "initial_passwords.json")
+        )
 
     @admin.action(description="Create Roster and Gradebook")
     def create_roster(self, request, queryset):
@@ -35,9 +45,23 @@ class CourseAdmin(admin.ModelAdmin):
 
 
 class AssignmentAdmin(admin.ModelAdmin):
-    list_display = ["name", "course", "status", "gradebook"]
+    list_display = ["name", "course", "status",
+                    "gradebook_view", "grading_link"]
     ordering = ["name"]
     actions = ["make_submissions", "create_feedbacks", "create_gradebook"]
+
+    @admin.display(description="Gradebook")
+    def gradebook_view(self, obj):
+        return format_html(
+            '<a href="{0}" download="{1}">View</a>',
+            obj.gradebook.url, os.path.basename(obj.gradebook.name)
+        )
+
+    @admin.display(description="Grading Link")
+    def grading_link(self, obj):
+        return format_html(
+            '<a href="/grade/{0}">Grade</a>', obj.grading_secret
+        )
 
     @admin.action(description="Make submissions")
     def make_submissions(self, request, queryset):

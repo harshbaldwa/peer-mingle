@@ -124,7 +124,6 @@ class Course(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(f"{self.code}-{self.semester}-{self.year}")
         path = f"courses/{self.slug}/"
-        # only do the following steps if the course is being created
         if self.roster and not os.path.exists(self.roster.path):
             roster_path = path + f"roster-{os.urandom(12).hex()}/"
             self.roster.name = roster_path + "roster.xlsx"
@@ -170,15 +169,20 @@ class Assignment(models.Model):
     due_date = models.DateTimeField(blank=True, null=True)
     status = models.BooleanField(default=False, editable=False)
     gradebook = models.FileField(
-        upload_to="", blank=True, max_length=200)
+        upload_to="", blank=True, max_length=200, editable=False)
+    grading_secret = models.CharField(
+        max_length=8, blank=True, editable=False, unique=True)
 
     def __str__(self):
         return self.name + " - " + self.course.code
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.name)
-        path = f"courses/{self.course.slug}/assignments/{self.slug}/"
+        if not self.id:
+            self.slug = slugify(self.name)
+            grading_secret = os.urandom(4).hex()
+            self.grading_secret = grading_secret
         if self.gradescope_submissions:
+            path = f"courses/{self.course.slug}/assignments/{self.slug}/"
             self.gradescope_submissions.name = path + "gradescope.zip"
         super().save(*args, **kwargs)
 

@@ -170,7 +170,7 @@ def delete_comment(request, id):
 @login_required
 @staff_member_required
 def ta_view_assignment(request, ass_id):
-    assignment = Assignment.objects.get(id=ass_id)
+    assignment = Assignment.objects.get(grading_secret=ass_id)
     submissions = Submission.objects.filter(assignment=assignment)
     deadline_passed = timezone.now() > assignment.due_date
     for i, submission in enumerate(submissions, start=1):
