@@ -1,5 +1,6 @@
 import os
 
+from django.utils import timezone
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
@@ -45,13 +46,36 @@ class CourseAdmin(admin.ModelAdmin):
 
 
 class AssignmentAdmin(admin.ModelAdmin):
-    list_display = ["name", "course", "status",
-                    "gradebook_view", "grading_link"]
+    list_display = ["name", "course", "issue_status_view",
+                    "grading_link", "graded_status_view", "gradebook_view"]
     ordering = ["name"]
     actions = ["make_submissions", "create_feedbacks", "create_gradebook"]
 
+    @admin.display(description="Issuing Status", boolean=True)
+    def issue_status_view(self, obj):
+        if timezone.now() > obj.due_date:
+            obj.issue_status = True
+            obj.save()
+        return obj.issue_status
+
+    @admin.display(description="Graded Status", boolean=True)
+    def graded_status_view(self, obj):
+        # get all feedbacks for this assignment
+        # assignment has no property feedbacks
+        feedbacks = Feedback.objects.filter(
+            assignment=obj, issued=True, graded=False)
+        feedbacks_issued = Feedback.objects.filter(
+            assignment=obj, issued=True)
+        if feedbacks.count() == 0 and feedbacks_issued.count() != 0:
+            obj.graded_status = True
+            obj.save()
+        return obj.graded_status
+
     @admin.display(description="Gradebook")
     def gradebook_view(self, obj):
+        # if no gradebook is created
+        if not obj.gradebook:
+            return "Not created yet"
         return format_html(
             '<a href="{0}" download="{1}">View</a>',
             obj.gradebook.url, os.path.basename(obj.gradebook.name)

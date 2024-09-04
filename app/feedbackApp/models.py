@@ -167,7 +167,8 @@ class Assignment(models.Model):
     reviewing_type_anonymous = models.BooleanField(default=False)
     gradescope_submissions = models.FileField(upload_to="", blank=True)
     due_date = models.DateTimeField(blank=True, null=True)
-    status = models.BooleanField(default=False, editable=False)
+    issue_status = models.BooleanField(default=False, editable=False)
+    graded_status = models.BooleanField(default=False, editable=False)
     gradebook = models.FileField(
         upload_to="", blank=True, max_length=200, editable=False)
     grading_secret = models.CharField(
@@ -195,7 +196,7 @@ class Assignment(models.Model):
         feedbacks.create_feedbacks(self, GTUser, Submission, Feedback)
 
     def create_gradebook(self):
-        if self.feedback.filter(graded=False).exists():
+        if self.feedback.filter(issued=True, graded=False).exists():
             return False
         gradebook.create_assignment_gradebook(self)
         return True
