@@ -215,7 +215,8 @@ def ta_view_assignment(request, ass_id):
                 number_issued += 1
         if number_issued == number_total or deadline_passed:
             if number_graded != number_issued and number_issued != 0:
-                status = f"Grading - {100*number_graded/number_issued:.0f} %"
+                percent = 100 * number_graded / number_issued
+                status = f"Grading - {percent:.0f} %"
             else:
                 status = "Graded"
         submission.status = status
