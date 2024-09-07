@@ -45,7 +45,7 @@ def create_roster(file_path, UserModel, course):
             gt_username = r[3].value
             password = ''.join(random.choices(
                 string.ascii_lowercase + string.digits, k=12))
-            initial_passwords[gt_username] = password
+            initial_passwords[gt_username] = [email, password]
             if is_student:
                 objs_student.append(
                     UserModel(

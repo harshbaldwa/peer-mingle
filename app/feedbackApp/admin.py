@@ -66,8 +66,9 @@ class CourseAdmin(admin.ModelAdmin):
     @admin.display(description="Passwords")
     def passwords(self, obj):
         return format_html(
-            '<a href="{0}">View</a>', obj.roster.url.replace(
-                "roster.xlsx", "initial_passwords.json")
+            '<a href="{0}" download="{1}">View</a>',
+            obj.roster.url.replace("roster.xlsx", "initial_passwords.json"),
+            "initial_passwords.json"
         )
 
     @admin.action(description="Create Roster and Gradebook")
