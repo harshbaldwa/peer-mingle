@@ -1,12 +1,17 @@
 import os
+from datetime import datetime
 
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.utils import timezone
+from django.utils.timezone import make_aware
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
 
-from .forms import CustomUserChangeForm, CustomUserCreationForm
-from .models import Assignment, Course, Feedback, GTUser, Submission
+from .forms import (CustomUserChangeForm,
+                    CustomUserCreationForm, ExtendDeadlineForm)
+from .models import Assignment, Course, Feedback, GTUser, Submission, Extension
 
 
 class GTUserAdmin(UserAdmin):
@@ -23,6 +28,33 @@ class GTUserAdmin(UserAdmin):
     )
     ordering = ["email"]
     search_fields = ["email", "first_name", "gt_id"]
+    actions = ["extend_deadline"]
+
+    @admin.action(description="Extend deadline")
+    def extend_deadline(self, request, queryset):
+        if 'apply' in request.POST:
+            assignment_id = request.POST["assignment"]
+            extend_deadline = request.POST["extend_deadline"]
+            assignment = Assignment.objects.get(id=assignment_id)
+            for student in queryset:
+                extension = Extension.objects.create(
+                    assignment=assignment,
+                    student=student,
+                    date=make_aware(datetime.fromisoformat(extend_deadline))
+                )
+                extension.save()
+            self.message_user(request, "Deadline extended successfully")
+
+            return HttpResponseRedirect(request.get_full_path())
+
+        form = ExtendDeadlineForm(initial={
+            "_selected_action": queryset.values_list("id", flat=True)
+        })
+
+        return render(request, "admin/extend_deadline.html", {
+            "form": form,
+            "items": queryset
+        })
 
 
 class CourseAdmin(admin.ModelAdmin):
@@ -53,9 +85,19 @@ class AssignmentAdmin(admin.ModelAdmin):
 
     @admin.display(description="Issuing Status", boolean=True)
     def issue_status_view(self, obj):
-        if timezone.now() > obj.due_date:
+        last_date = obj.due_date
+        extensions = Extension.objects.filter(assignment=obj)
+        late_dates = [extension.date for extension in extensions]
+        if late_dates:
+            last_date = max(*late_dates, last_date)
+
+        if timezone.now() > last_date:
             obj.issue_status = True
             obj.save()
+        else:
+            obj.issue_status = False
+            obj.save()
+
         return obj.issue_status
 
     @admin.display(description="Graded Status", boolean=True)
@@ -130,27 +172,12 @@ class FeedbackAdmin(admin.ModelAdmin):
     list_display = ["assignment", "student", "reviewer", "issued", "graded"]
     list_filter = ["assignment", "graded"]
     search_fields = ["submission__student__username", "reviewer__username"]
-    # REMOVEME: actions for grading feedbacks
-    actions = ["issue_feedbacks", "grade_feedbacks"]
 
-    # REMOVEME: action for issuing feedbacks
-    @admin.action(description="Issue feedbacks")
-    def issue_feedbacks(self, request, queryset):
-        for feedback in queryset:
-            feedback.comment = "This is a sample comment"
-            feedback.issued = True
-            feedback.save()
-        self.message_user(request, "Feedback(s) issued successfully")
 
-    # REMOVEME: action for grading feedbacks
-    @admin.action(description="Grade feedbacks")
-    def grade_feedbacks(self, request, queryset):
-        for feedback in queryset:
-            feedback.graded = True
-            # feedback.grade = random.randint(0, feedback.assignment.out_of)
-            feedback.grade = 4
-            feedback.save()
-        self.message_user(request, "Feedback(s) graded successfully")
+class ExtensionAdmin(admin.ModelAdmin):
+    list_display = ["assignment", "student", "date"]
+    ordering = ["assignment", "student"]
+    list_filter = ["assignment", "student"]
 
 
 # Register your models here.
@@ -159,3 +186,4 @@ admin.site.register(GTUser, GTUserAdmin)
 admin.site.register(Assignment, AssignmentAdmin)
 admin.site.register(Submission, SubmissionAdmin)
 admin.site.register(Feedback, FeedbackAdmin)
+admin.site.register(Extension, ExtensionAdmin)

@@ -14,7 +14,12 @@
         <a href="{{ assignment.get_absolute_url }}" class="assignment-item">
             <h3>{{assignment.name}}</h3>
             <p>{{assignment.description}}</p>
-            <p><b>Due Date</b>: {{ assignment.due_date }}</p>
+            <p>
+                <b>Due Date</b>: {{ assignment.due_date }}
+                {% if assignment.extension %}
+                <i>(Extension)</i>
+                {% endif %}
+            </p>
             <div class="submission-info">
                 <p>Submitted:
                     {% if assignment.submitted %}

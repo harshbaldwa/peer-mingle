@@ -9,7 +9,12 @@
 {% block content %}
 <div class="assignment-detail">
     <h2>{{ assignment.name }} Details</h2>
-    <p><b>Due Date</b>: {{ assignment.due_date }}</p>
+    <p>
+        <b>Due Date</b>: {{ assignment.due_date }}
+        {% if assignment.extension %}
+        <i>(Extension)</i>
+        {% endif %}
+    </p>
     {% if submission %}
     <div class="submission-section">
         <h3>Your Submission</h3>

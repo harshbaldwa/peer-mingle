@@ -1,7 +1,8 @@
+from django import forms
 from django.contrib.auth.forms import (PasswordChangeForm, UserChangeForm,
                                        UserCreationForm)
 
-from .models import GTUser
+from .models import GTUser, Assignment
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -36,3 +37,16 @@ class CustomPasswordChangeForm(PasswordChangeForm):
             {'placeholder': 'New Password'})
         self.fields['new_password2'].widget.attrs.update(
             {'placeholder': 'Confirm New Password'})
+
+
+class ExtendDeadlineForm(forms.Form):
+    assignment = forms.ModelChoiceField(
+        queryset=Assignment.objects.all(),
+    )
+    extend_deadline = forms.DateTimeField(
+        # date time picker
+        widget=forms.DateTimeInput(
+            attrs={'type': 'datetime-local'},
+            format='%Y-%m-%dT%H:%M'
+        )
+    )

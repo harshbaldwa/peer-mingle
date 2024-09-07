@@ -4,7 +4,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from django.shortcuts import redirect, render
 
-from .models import Assignment, Course, Feedback, Submission
+from .models import Assignment, Course, Feedback, Submission, Extension
 
 
 @login_required
@@ -53,6 +53,14 @@ def course_view(request, slug):
                 assignment=assignment, student=request.user)
             assignment.submitted = True
             assignment.is_late = submission.is_late
+            # check if extension is granted
+            try:
+                extension = Extension.objects.get(
+                    assignment=assignment, student=request.user)
+                assignment.due_date = extension.date
+                assignment.extension = True
+            except Extension.DoesNotExist:
+                assignment.extension = False
             # if deadline is passed let me know
             if assignment.due_date > timezone.now():
                 pending_feedbacks_count = Feedback.objects.filter(
@@ -94,6 +102,14 @@ def assignment_view(request, slug, id):
     pending_feedbacks = feedbacks.filter(issued=False)
     completed_feedbacks = feedbacks.filter(issued=True)
     comments = Feedback.objects.filter(submission=submission, issued=True)
+    # check if extension is granted
+    try:
+        extension = Extension.objects.get(
+            assignment=assignment, student=request.user)
+        assignment.due_date = extension.date
+        assignment.extension = True
+    except Extension.DoesNotExist:
+        assignment.extension = False
     assignment.due_date_passed = assignment.due_date < timezone.now()
 
     return render(request, "assignment_detail.html", {
@@ -111,6 +127,14 @@ def feedback_view(request, id):
     feedback = Feedback.objects.get(id=id)
     submission = feedback.submission
     assignment = submission.assignment
+    # check if extension is granted
+    try:
+        extension = Extension.objects.get(
+            assignment=assignment, student=request.user)
+        assignment.due_date = extension.date
+        assignment.extension = True
+    except Extension.DoesNotExist:
+        assignment.extension = False
     if not feedback.who_has_access(request.user):
         return render(request, "403.html", {
             "message": "You don't have access to this feedback."

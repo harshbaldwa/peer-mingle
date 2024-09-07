@@ -287,3 +287,16 @@ class Feedback(models.Model):
 
     def who_has_access(self, user):
         return user == self.reviewer
+
+
+class Extension(models.Model):
+    assignment = models.ForeignKey(
+        "Assignment", on_delete=models.CASCADE, related_name="extensions"
+    )
+    student = models.ForeignKey(
+        GTUser, on_delete=models.CASCADE, related_name="extensions"
+    )
+    date = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.student.username} - {self.assignment}"
