@@ -172,6 +172,8 @@ def edit_comment(request, id):
             "message": "You don't have access to this comment."
         })
     comment.issued = False
+    comment.graded = False
+    comment.grade = None
     comment.save()
     return redirect("feedback", id)
 
@@ -185,6 +187,7 @@ def delete_comment(request, id):
         })
     comment.comment = ""
     comment.grade = None
+    comment.graded = False
     comment.issued = False
     comment.created_at = None
     comment.save()
@@ -211,14 +214,23 @@ def ta_view_assignment(request, ass_id):
             if feedback.issued:
                 number_issued += 1
         if number_issued == number_total or deadline_passed:
-            if number_graded != number_issued:
+            if number_graded != number_issued and number_issued != 0:
                 status = f"Grading - {100*number_graded/number_issued:.0f} %"
             else:
                 status = "Graded"
         submission.status = status
+    extensions = Extension.objects.filter(assignment=assignment)
+    extension_granted = False
+    last_date = assignment.due_date
+    late_dates = [extension.date for extension in extensions]
+    if late_dates:
+        extension_granted = True
+        last_date = max(*late_dates, assignment.due_date)
     return render(request, "ta_view_all.html", {
         "assignment": assignment,
-        "submissions": submissions
+        "submissions": submissions,
+        "extension_granted": extension_granted,
+        "last_date": last_date
     })
 
 

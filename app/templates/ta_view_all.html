@@ -2,7 +2,12 @@
 
 {% block content %}
 <h1>{{ assignment.name }}</h1>
-<h3>{{ assignment.due_date|date:"F d, Y" }}</h3>
+<h3>
+    {{ assignment.due_date|date:"F d, Y" }}
+    {% if extension_granted %}
+    <br><span style="color: red;">(Extensions till {{ last_date|date:"F d, Y" }})</span>
+    {% endif %}
+</h3>
 
 <table style="width: 100%;">
     <tr>
