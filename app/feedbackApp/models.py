@@ -81,8 +81,8 @@ class GTUserManager(BaseUserManager):
 class GTUser(AbstractUser, PermissionsMixin):
     username = models.CharField(max_length=20, unique=True)
     email = models.EmailField(max_length=254, unique=True)
-    first_name = models.CharField(max_length=20)
-    last_name = models.CharField(max_length=20)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
     is_student = models.BooleanField(default=True)
     assign_feedbacks = models.BooleanField(default=False)
     gt_id = models.CharField(max_length=9, unique=True)
