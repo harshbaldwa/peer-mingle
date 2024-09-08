@@ -14,7 +14,6 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASS}@postgres-db:${POSTGRES_PORT}/${POSTGRES_DB}
       - DJANGO_ALLOWED_HOSTS=peer-mingle.cc.gatech.edu
       - DJANGO_CSRF=https://peer-mingle.cc.gatech.edu
-      - DJANGO_MEDIA_ROOT=/home/app/media
     depends_on:
       - postgres-db
     labels:
