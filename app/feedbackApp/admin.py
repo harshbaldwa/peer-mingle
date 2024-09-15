@@ -86,7 +86,7 @@ class AssignmentAdmin(admin.ModelAdmin):
 
     @admin.display(description="Issuing Status", boolean=True)
     def issue_status_view(self, obj):
-        last_date = obj.due_date
+        last_date = obj.real_due_date
         extensions = Extension.objects.filter(assignment=obj)
         late_dates = [extension.date for extension in extensions]
         if late_dates:

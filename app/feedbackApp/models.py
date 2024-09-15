@@ -3,6 +3,7 @@ from django.contrib.auth.models import (AbstractUser, BaseUserManager,
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+from django.utils import timezone
 
 from .scripts import names, submissions, feedbacks, roster, gradebook
 import os
@@ -167,6 +168,7 @@ class Assignment(models.Model):
     reviewing_type_anonymous = models.BooleanField(default=False)
     gradescope_submissions = models.FileField(upload_to="", blank=True)
     due_date = models.DateTimeField(blank=True, null=True)
+    grace_period = models.IntegerField(default=0, help_text="in hours")
     issue_status = models.BooleanField(default=False, editable=False)
     graded_status = models.BooleanField(default=False, editable=False)
     gradebook = models.FileField(
@@ -212,6 +214,13 @@ class Assignment(models.Model):
         return reverse("assignment", kwargs={
             "slug": self.course.slug, "id": self.id
         })
+
+    @property
+    def real_due_date(self):
+        if self.due_date:
+            # add grace period to due date using django timezone
+            return self.due_date + timezone.timedelta(hours=self.grace_period)
+        return None
 
 
 class Submission(models.Model):

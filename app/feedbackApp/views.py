@@ -62,7 +62,7 @@ def course_view(request, slug):
             except Extension.DoesNotExist:
                 assignment.extension = False
             # if deadline is passed let me know
-            if assignment.due_date > timezone.now():
+            if assignment.real_due_date > timezone.now():
                 pending_feedbacks_count = Feedback.objects.filter(
                     assignment=assignment,
                     reviewer=request.user,
@@ -110,7 +110,7 @@ def assignment_view(request, slug, id):
         assignment.extension = True
     except Extension.DoesNotExist:
         assignment.extension = False
-    assignment.due_date_passed = assignment.due_date < timezone.now()
+    assignment.due_date_passed = assignment.real_due_date < timezone.now()
 
     return render(request, "assignment_detail.html", {
         "assignment": assignment,
@@ -140,7 +140,7 @@ def feedback_view(request, id):
             "message": "You don't have access to this feedback."
         })
     if request.method == "POST" and request.user == feedback.reviewer:
-        if assignment.due_date < timezone.now():
+        if assignment.real_due_date < timezone.now():
             return render(request, "403.html", {
                 "message": "The due date for this assignment has passed."
             })
@@ -160,7 +160,7 @@ def feedback_view(request, id):
         "submission": submission,
         "comments": comments,
         "reviewers": reviewers,
-        "due_date_passed": assignment.due_date < timezone.now()
+        "due_date_passed": assignment.real_due_date < timezone.now()
     })
 
 
@@ -199,7 +199,7 @@ def delete_comment(request, id):
 def ta_view_assignment(request, ass_id):
     assignment = Assignment.objects.get(grading_secret=ass_id)
     submissions = Submission.objects.filter(assignment=assignment)
-    deadline_passed = timezone.now() > assignment.due_date
+    deadline_passed = timezone.now() > assignment.real_due_date
     for i, submission in enumerate(submissions, start=1):
         submission.number = i
         feedbacks = Feedback.objects.filter(submission=submission)
@@ -222,11 +222,11 @@ def ta_view_assignment(request, ass_id):
         submission.status = status
     extensions = Extension.objects.filter(assignment=assignment)
     extension_granted = False
-    last_date = assignment.due_date
+    last_date = assignment.real_due_date
     late_dates = [extension.date for extension in extensions]
     if late_dates:
         extension_granted = True
-        last_date = max(*late_dates, assignment.due_date)
+        last_date = max(*late_dates, assignment.real_due_date)
     return render(request, "ta_view_all.html", {
         "assignment": assignment,
         "submissions": submissions,
