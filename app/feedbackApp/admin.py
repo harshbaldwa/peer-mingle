@@ -82,7 +82,7 @@ class AssignmentAdmin(admin.ModelAdmin):
     list_display = ["name", "course", "issue_status_view",
                     "grading_link", "graded_status_view", "gradebook_view"]
     ordering = ["name"]
-    actions = ["make_submissions", "create_feedbacks", "create_gradebook"]
+    actions = ["make_submissions_and_create_feedbacks", "create_gradebook"]
 
     @admin.display(description="Issuing Status", boolean=True)
     def issue_status_view(self, obj):
@@ -130,17 +130,13 @@ class AssignmentAdmin(admin.ModelAdmin):
             '<a href="/grade/{0}">Grade</a>', obj.grading_secret
         )
 
-    @admin.action(description="Make submissions")
-    def make_submissions(self, request, queryset):
+    @admin.action(description="Make submissions and create feedbacks")
+    def make_submissions_and_create_feedbacks(self, request, queryset):
         for assignment in queryset:
             assignment.make_submissions()
-        self.message_user(request, "Submission(s) created successfully")
-
-    @admin.action(description="Create feedbacks")
-    def create_feedbacks(self, request, queryset):
-        for assignment in queryset:
             assignment.create_feedbacks()
-        self.message_user(request, "Feedback(s) created successfully")
+        self.message_user(
+            request, "Submission(s) and Feedback(s) created successfully")
 
     @admin.action(description="Create gradebook")
     def create_gradebook(self, request, queryset):
